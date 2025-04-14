@@ -9,47 +9,62 @@
       font-family: Arial, sans-serif;
       padding: 1rem;
       margin: 0;
-      background-color: #f9f9f9;
+      background-color: #f0f4f8;
     }
+
     .container {
       max-width: 600px;
       margin: auto;
-      background: #fff;
+      background: white;
       padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
+
     label {
       display: block;
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, select {
+
+    input {
       width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
       box-sizing: border-box;
     }
+
     button {
       width: 100%;
       padding: 0.75rem;
       margin-top: 1.5rem;
-      background-color: #007BFF;
+      background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 1rem;
+      cursor: pointer;
     }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
     .result {
       text-align: center;
       margin-top: 1.5rem;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: bold;
     }
+
     @media (max-width: 600px) {
       body {
         padding: 0.5rem;
@@ -63,54 +78,21 @@
 <body>
   <div class="container">
     <h1>Weekly Outbreak Predictor</h1>
-    <label for="prevCases">Previous Week's Cases:</label>
-    <input type="number" id="prevCases" placeholder="Enter previous week's cases" />
 
-    <label for="autoFill">Use Auto-Fill Data:</label>
-    <select id="autoFill">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
+    <label for="prevCases">Previous Week's Cases</label>
+    <input type="number" id="prevCases" placeholder="Enter number" />
 
-    <div id="manualInputs">
-      <label for="mobility">Mobility (0-100):</label>
-      <input type="number" id="mobility" placeholder="Enter mobility score" />
+    <label for="mobility">Mobility (0–100)</label>
+    <input type="number" id="mobility" placeholder="Enter mobility" />
 
-      <label for="seasonalRisk">Seasonal Risk (0-100):</label>
-      <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk score" />
+    <label for="seasonalRisk">Seasonal Risk (0–100)</label>
+    <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk" />
 
-      <label for="healthResponse">Health Response (0-100):</label>
-      <input type="number" id="healthResponse" placeholder="Enter health response score" />
-    </div>
+    <label for="healthResponse">Health Response (0–100)</label>
+    <input type="number" id="healthResponse" placeholder="Enter health response" />
 
-    <div id="autoFillInputs" style="display: none;">
-      <label for="month">Select Month:</label>
-      <select id="month">
-        <option value="0">January</option>
-        <option value="1">February</option>
-        <option value="2">March</option>
-        <option value="3">April</option>
-        <option value="4">May</option>
-        <option value="5">June</option>
-        <option value="6">July</option>
-        <option value="7">August</option>
-        <option value="8">September</option>
-        <option value="9">October</option>
-        <option value="10">November</option>
-        <option value="11">December</option>
-      </select>
-
-      <label for="week">Select Week:</label>
-      <select id="week">
-        <option value="0">Week 1</option>
-        <option value="1">Week 2</option>
-        <option value="2">Week 3</option>
-        <option value="3">Week 4</option>
-      </select>
-    </div>
-
-    <label for="zeroFlag">Zero Flag (0 or 1):</label>
-    <input type="number" id="zeroFlag" placeholder="Enter zero flag value" />
+    <label for="zeroFlag">Zero Flag (0 or 1)</label>
+    <input type="number" id="zeroFlag" placeholder="Enter 0 or 1" />
 
     <button onclick="calculatePrediction()">Predict Cases</button>
 
@@ -118,40 +100,23 @@
   </div>
 
   <script>
-    const mobilityData = [
-      [30, 32, 32, 30], // January
-      [35, 35, 35, 35], // February
-      [50, 50, 55, 55], // March
-      [60, 60, 60, 60], // April
-      [65, 65, 70, 70], // May
-      [50, 50, 50, 50], // June
-      [55, 55, 55, 55], // July
-      [60, 60, 60, 60], // August
-      [55, 55, 55, 55], // September
-      [50, 50, 50, 50], // October
-      [45, 45, 45, 45], // November
-      [40, 40, 40, 40]  // December
-    ];
+    function calculatePrediction() {
+      const prevCases = Number(document.getElementById("prevCases").value);
+      const mobility = Number(document.getElementById("mobility").value);
+      const seasonalRisk = Number(document.getElementById("seasonalRisk").value);
+      const healthResponse = Number(document.getElementById("healthResponse").value);
+      const zeroFlag = Number(document.getElementById("zeroFlag").value);
 
-    const seasonalRiskData = [
-      [30, 30, 30, 30], // January
-      [30, 30, 30, 30], // February
-      [40, 40, 40, 40], // March
-      [50, 50, 50, 50], // April
-      [55, 55, 55, 55], // May
-      [50, 50, 50, 50], // June
-      [45, 45, 45, 45], // July
-      [50, 50, 50, 50], // August
-      [40, 40, 40, 40], // September
-      [30, 30, 30, 30], // October
-      [30, 30, 30, 30], // November
-      [30, 30, 30, 30]  // December
-    ];
+      const mobilityFactor = 30 * (mobility / 100);
+      const seasonalFactor = 25 * (seasonalRisk / 100);
+      const healthFactor = 1 - healthResponse / 100;
+      const zeroMultiplier = 1 - zeroFlag;
 
-    const healthResponseData = [
-      [55, 55, 55, 55], // January
-      [55, 55, 55, 55], // February
-      [55, 55, 55, 55], // March
-      [60, 60, 60,
-::contentReference[oaicite:0]{index=0}
- 
+      const prediction = zeroMultiplier * ((0.6 * prevCases) + mobilityFactor + seasonalFactor) * healthFactor;
+      const roundedPrediction = Math.round(prediction);
+
+      document.getElementById("result").textContent = `Predicted Cases: ${roundedPrediction}`;
+    }
+  </script>
+</body>
+</html>
