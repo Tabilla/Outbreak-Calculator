@@ -28,7 +28,7 @@
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, select {
+    input {
       width: 100%;
       padding: 0.5rem;
       margin-top: 0.5rem;
@@ -43,7 +43,6 @@
       border: none;
       border-radius: 4px;
       font-size: 1rem;
-      cursor: pointer;
     }
     .result {
       text-align: center;
@@ -65,57 +64,23 @@
   <div class="container">
     <h1>Weekly Outbreak Predictor</h1>
 
-    <label for="prevCases">Previous Week's Cases:</label>
+    <label for="prevCases">Previous Week's Cases (I₍w−1₎):</label>
     <input type="number" id="prevCases" placeholder="Enter previous week's cases" />
 
-    <label for="population">Population Size:</label>
-    <input type="number" id="population" placeholder="Enter population size" />
+    <label for="mobility">Mobility (M₍w₎, 0–100):</label>
+    <input type="number" id="mobility" placeholder="Enter mobility score" />
 
-    <label for="autoFill">Use Auto-Fill Data:</label>
-    <select id="autoFill">
-      <option value="no">No</option>
-      <option value="yes">Yes</option>
-    </select>
+    <label for="seasonalRisk">Seasonal Risk (S₍w₎, 0–100):</label>
+    <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk score" />
 
-    <div id="manualInputs">
-      <label for="mobility">Mobility (0-100):</label>
-      <input type="number" id="mobility" placeholder="Enter mobility score" />
+    <label for="healthResponse">Health Response (H₍w₎, 0–100):</label>
+    <input type="number" id="healthResponse" placeholder="Enter health response score" />
 
-      <label for="seasonalRisk">Seasonal Risk (0-100):</label>
-      <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk score" />
+    <label for="zeroFlag">Zero Flag (Z₍w₎, 0 or 1):</label>
+    <input type="number" id="zeroFlag" placeholder="Enter zero flag" />
 
-      <label for="healthResponse">Health Response (0-100):</label>
-      <input type="number" id="healthResponse" placeholder="Enter health response score" />
-    </div>
-
-    <div id="autoFillInputs" style="display: none;">
-      <label for="month">Select Month:</label>
-      <select id="month">
-        <option value="0">January</option>
-        <option value="1">February</option>
-        <option value="2">March</option>
-        <option value="3">April</option>
-        <option value="4">May</option>
-        <option value="5">June</option>
-        <option value="6">July</option>
-        <option value="7">August</option>
-        <option value="8">September</option>
-        <option value="9">October</option>
-        <option value="10">November</option>
-        <option value="11">December</option>
-      </select>
-
-      <label for="week">Select Week:</label>
-      <select id="week">
-        <option value="0">Week 1</option>
-        <option value="1">Week 2</option>
-        <option value="2">Week 3</option>
-        <option value="3">Week 4</option>
-      </select>
-    </div>
-
-    <label for="zeroFlag">Zero Flag (0 or 1):</label>
-    <input type="number" id="zeroFlag" placeholder="Enter zero flag value" />
+    <label for="population">Population Size (P):</label>
+    <input type="number" id="population" placeholder="Enter city/municipality population" />
 
     <button onclick="calculatePrediction()">Predict Cases</button>
 
@@ -123,343 +88,23 @@
   </div>
 
   <script>
-    const mobilityData = [
-      [30, 32, 34, 36], // January
-      [35, 37, 39, 41], // February
-      [40, 42, 44, 46], // March
-      [45, 47, 49, 51], // April
-      [50, 52, 54, 56], // May
-      [55, 57, 59, 61], // June
-      [60, 62, 64, 66], // July
-      [65, 67, 69, 71], // August
-      [70, 72, 74, 76], // September
-      [75, 77, 79, 81], // October
-      [80, 82, 84, 86], // November
-      [85, 87, 89, 91]  // December
-    ];
+    function calculatePrediction() {
+      const prevCases = Number(document.getElementById('prevCases').value);
+      const mobility = Number(document.getElementById('mobility').value);
+      const seasonalRisk = Number(document.getElementById('seasonalRisk').value);
+      const healthResponse = Number(document.getElementById('healthResponse').value);
+      const zeroFlag = Number(document.getElementById('zeroFlag').value);
+      const population = Number(document.getElementById('population').value);
 
-    const seasonalRiskData = [
-      [20, 22, 24, 26], // January
-      [25, 27, 29, 31], // February
-      [30, 32, 34, 36], // March
-      [35, 37, 39, 41], // April
-      [40, 42, 44, 46], // May
-      [45, 47, 49, 51], // June
-      [50, 52, 54, 56], // July
-      [55, 57, 59, 61], // August
-      [60, 62, 64, 66], // September
-      [65, 67, 69, 71], // October
-      [70, 72, 74, 76], // November
-      [75, 77
-::contentReference[oaicite:10]{index=10}
- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weekly Outbreak Predictor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 1rem;
-      margin: 0;
-      background-color: #f9f9f9;
+      const zeroMultiplier = 1 - zeroFlag;
+      const healthFactor = 1 - (healthResponse / 100);
+
+      const basePrediction = (0.6 * prevCases) + (30 * (mobility / 100)) + (25 * (seasonalRisk / 100));
+      const prediction = zeroMultiplier * basePrediction * healthFactor * (population / 100000);
+
+      const rounded = Math.round(prediction);
+      document.getElementById('result').textContent = `Predicted Cases: ${rounded}`;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 1.5rem;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .result {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-    @media (max-width: 600px) {
-      body {
-        padding: 0.5rem;
-      }
-      .container {
-        padding: 1rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Weekly Outbreak Predictor</h1>
-
-    <label for="prevCases">Previous Week's Cases:</label>
-    <input type="number" id="prevCases" placeholder="Enter previous week's cases" />
-
-    <label for="population">Population Size:</label>
-    <input type="number" id="population" placeholder="Enter population size" />
-
-    <label for="autoFill">Use Auto-Fill Data:</label>
-    <select id="autoFill">
-      <option value="no">No</option>
-      <option value="yes">Yes</option>
-    </select>
-
-    <div id="manualInputs">
-      <label for="mobility">Mobility (0-100):</label>
-      <input type="number" id="mobility" placeholder="Enter mobility score" />
-
-      <label for="seasonalRisk">Seasonal Risk (0-100):</label>
-      <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk score" />
-
-      <label for="healthResponse">Health Response (0-100):</label>
-      <input type="number" id="healthResponse" placeholder="Enter health response score" />
-    </div>
-
-    <div id="autoFillInputs" style="display: none;">
-      <label for="month">Select Month:</label>
-      <select id="month">
-        <option value="0">January</option>
-        <option value="1">February</option>
-        <option value="2">March</option>
-        <option value="3">April</option>
-        <option value="4">May</option>
-        <option value="5">June</option>
-        <option value="6">July</option>
-        <option value="7">August</option>
-        <option value="8">September</option>
-        <option value="9">October</option>
-        <option value="10">November</option>
-        <option value="11">December</option>
-      </select>
-
-      <label for="week">Select Week:</label>
-      <select id="week">
-        <option value="0">Week 1</option>
-        <option value="1">Week 2</option>
-        <option value="2">Week 3</option>
-        <option value="3">Week 4</option>
-      </select>
-    </div>
-
-    <label for="zeroFlag">Zero Flag (0 or 1):</label>
-    <input type="number" id="zeroFlag" placeholder="Enter zero flag value" />
-
-    <button onclick="calculatePrediction()">Predict Cases</button>
-
-    <div class="result" id="result"></div>
-  </div>
-
-  <script>
-    const mobilityData = [
-      [30, 32, 34, 36], // January
-      [35, 37, 39, 41], // February
-      [40, 42, 44, 46], // March
-      [45, 47, 49, 51], // April
-      [50, 52, 54, 56], // May
-      [55, 57, 59, 61], // June
-      [60, 62, 64, 66], // July
-      [65, 67, 69, 71], // August
-      [70, 72, 74, 76], // September
-      [75, 77, 79, 81], // October
-      [80, 82, 84, 86], // November
-      [85, 87, 89, 91]  // December
-    ];
-
-    const seasonalRiskData = [
-      [20, 22, 24, 26], // January
-      [25, 27, 29, 31], // February
-      [30, 32, 34, 36], // March
-      [35, 37, 39, 41], // April
-      [40, 42, 44, 46], // May
-      [45, 47, 49, 51], // June
-      [50, 52, 54, 56], // July
-      [55, 57, 59, 61], // August
-      [60, 62, 64, 66], // September
-      [65, 67, 69, 71], // October
-      [70, 72, 74, 76], // November
-      [75, 77
-::contentReference[oaicite:10]{index=10}
- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weekly Outbreak Predictor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 1rem;
-      margin: 0;
-      background-color: #f9f9f9;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 1.5rem;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .result {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-    @media (max-width: 600px) {
-      body {
-        padding: 0.5rem;
-      }
-      .container {
-        padding: 1rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Weekly Outbreak Predictor</h1>
-
-    <label for="prevCases">Previous Week's Cases:</label>
-    <input type="number" id="prevCases" placeholder="Enter previous week's cases" />
-
-    <label for="population">Population Size:</label>
-    <input type="number" id="population" placeholder="Enter population size" />
-
-    <label for="autoFill">Use Auto-Fill Data:</label>
-    <select id="autoFill">
-      <option value="no">No</option>
-      <option value="yes">Yes</option>
-    </select>
-
-    <div id="manualInputs">
-      <label for="mobility">Mobility (0-100):</label>
-      <input type="number" id="mobility" placeholder="Enter mobility score" />
-
-      <label for="seasonalRisk">Seasonal Risk (0-100):</label>
-      <input type="number" id="seasonalRisk" placeholder="Enter seasonal risk score" />
-
-      <label for="healthResponse">Health Response (0-100):</label>
-      <input type="number" id="healthResponse" placeholder="Enter health response score" />
-    </div>
-
-    <div id="autoFillInputs" style="display: none;">
-      <label for="month">Select Month:</label>
-      <select id="month">
-        <option value="0">January</option>
-        <option value="1">February</option>
-        <option value="2">March</option>
-        <option value="3">April</option>
-        <option value="4">May</option>
-        <option value="5">June</option>
-        <option value="6">July</option>
-        <option value="7">August</option>
-        <option value="8">September</option>
-        <option value="9">October</option>
-        <option value="10">November</option>
-        <option value="11">December</option>
-      </select>
-
-      <label for="week">Select Week:</label>
-      <select id="week">
-        <option value="0">Week 1</option>
-        <option value="1">Week 2</option>
-        <option value="2">Week 3</option>
-        <option value="3">Week 4</option>
-      </select>
-    </div>
-
-    <label for="zeroFlag">Zero Flag (0 or 1):</label>
-    <input type="number" id="zeroFlag" placeholder="Enter zero flag value" />
-
-    <button onclick="calculatePrediction()">Predict Cases</button>
-
-    <div class="result" id="result"></div>
-  </div>
-
-  <script>
-    const mobilityData = [
-      [30, 32, 34, 36], // January
-      [35, 37, 39, 41], // February
-      [40, 42, 44, 46], // March
-      [45, 47, 49, 51], // April
-      [50, 52, 54, 56], // May
-      [55, 57, 59, 61], // June
-      [60, 62, 64, 66], // July
-      [65, 67, 69, 71], // August
-      [70, 72, 74, 76], // September
-      [75, 77, 79, 81], // October
-      [80, 82, 84, 86], // November
-      [85, 87, 89, 91]  // December
-    ];
-
-    const seasonalRiskData = [
-      [20, 22, 24, 26], // January
-      [25, 27, 29, 31], // February
-      [30, 32, 34, 36], // March
-      [35, 37, 39, 41], // April
-      [40, 42, 44, 46], // May
-      [45, 47, 49, 51], // June
-      [50, 52, 54, 56], // July
-      [55, 57, 59, 61], // August
-      [60, 62, 64, 66], // September
-      [65, 67, 69, 71], // October
-      [70, 72, 74, 76], // November
-      [75, 77
-::contentReference[oaicite:10]{index=10}
- 
+  </script>
+</body>
+</html>
